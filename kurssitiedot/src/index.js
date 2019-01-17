@@ -23,8 +23,13 @@ const Content = ({parts}) => {
         return parts.map(p => <Part part={p} key={p.id} />);
     } 
 
+    const totalNumber = () => parts.reduce((acc, elem) => acc + elem.exercises, 0); 
+
     return(
-        <>{partComponents()}</>
+        <>
+        {partComponents()}
+        <p>Yhteensä {totalNumber()} tehtävää</p>
+        </>
 
     )
 } 
