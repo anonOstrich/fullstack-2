@@ -2,24 +2,32 @@ import React, {useState} from 'react'
 
 const App = () => {
     const [persons, setPersons] = useState([
-        {name: 'Arto Hellas'}
+        {name: 'Arto Hellas', number: '032374328'}
     ]); 
 
     const [ newName, setNewName ] = useState('');
+    const [ newNumber, setNewNumber] = useState(''); 
 
-    const addNewName = (event) => {
+    const addNewInformation = (event) => {
         event.preventDefault(); 
+
         if(persons.map(p => p.name).includes(newName)){
             alert(`${newName} on jo luettelossa!`);
         } else {
-        setPersons(persons.concat({name: newName})); 
+        setPersons(persons.concat({name: newName || 'no name', number: newNumber || 'xxx'})); 
         setNewName(''); 
         }
+    }
+
+    const changeNumberValue = (event) => {
+        setNewNumber(event.target.value); 
     }
 
     const changeNameValue = (event) => {
         setNewName(event.target.value); 
     }
+
+    const contactInformations = () =>  persons.map(p => <div key={p.name}>{`${p.name} ${p.number}`}</div>)
 
     return (
     <div>
@@ -29,12 +37,14 @@ const App = () => {
                 nimi: <input value={newName} onChange={changeNameValue} />
             </div>
             <div>
-                <button type="submit" onClick={addNewName}>lisää</button>
+                numero: <input value={newNumber} onChange={changeNumberValue} />
+            </div>
+            <div>
+                <button type="submit" onClick={addNewInformation}>lisää</button>
             </div>
         </form>
         <h2>Numerot</h2>
-        
-      
+        {contactInformations()}     
     </div>)
 }
 
