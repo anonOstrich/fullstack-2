@@ -1,5 +1,37 @@
 import React, {useState} from 'react'
 
+
+const Filter = ({changeHandler}) => {
+    return (
+    <div>
+    rajaa tuloksia <input onChange={changeHandler} />
+    </div>)
+}
+
+const Persons = ({ contactInfo, filter }) => {
+    const potentials = filter === '' ?
+    contactInfo 
+    : contactInfo.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+    
+   return  potentials.map(p => <div key={p.name}>{`${p.name} ${p.number}`}</div>)
+}
+
+const PersonForm = ({nameValue, nameChangeFunction, numberValue, numberChangeFunction, submitFunction}) => {
+    return(
+    <form>
+    <div>
+        nimi: <input value={nameValue} onChange={nameChangeFunction} />
+    </div>
+    <div>
+        numero: <input value={numberValue} onChange={numberChangeFunction} />
+    </div>
+    <div>
+        <button type="submit" onClick={submitFunction}>lisää</button>
+    </div>
+</form>)
+
+}
+
 const App = () => {
     const [persons, setPersons] = useState([
         { name: 'Arto Hellas', number: '040-123456' },
@@ -31,31 +63,24 @@ const App = () => {
         setNewName(event.target.value); 
     }
 
-    const contactInformations = () =>  {
-        const potentials = (filterString === '') ?
-         persons 
-         : persons.filter(p => p.name.toLowerCase().includes(filterString.toLowerCase()));
-        return  potentials.map(p => <div key={p.name}>{`${p.name} ${p.number}`}</div>)
-    }
+    const changeFilterString = (event) => setFilterString(event.target.value); 
 
     return (
     <div>
         <h2>Puhelinluettelo</h2>
-        rajaa näytettäviä <input onChange={(event) => setFilterString(event.target.value)}/>
-        <form>
-            <div>
-                nimi: <input value={newName} onChange={changeNameValue} />
-            </div>
-            <div>
-                numero: <input value={newNumber} onChange={changeNumberValue} />
-            </div>
-            <div>
-                <button type="submit" onClick={addNewInformation}>lisää</button>
-            </div>
-        </form>
+        <Filter changeHandler={changeFilterString} />
+        <h3>Lisää uusi</h3>
+        <PersonForm
+            nameValue={newName} nameChangeFunction={changeNameValue}
+            numberValue={newNumber} numberChangeFunction={changeNumberValue}
+            submitFunction={addNewInformation}
+         />
+
         <h2>Numerot</h2>
-        {contactInformations()}     
+        <Persons contactInfo={persons} filter={filterString}/>   
     </div>)
 }
+
+
 
 export default App
