@@ -8,12 +8,16 @@ const Filter = ({changeHandler}) => {
     </div>)
 }
 
-const Persons = ({ contactInfo, filter }) => {
+const Persons = ({ contactInfo, filter, createDeletorForPerson }) => {
     const potentials = filter === '' ?
     contactInfo 
     : contactInfo.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
     
-   return  potentials.map(p => <div key={p.name}>{`${p.name} ${p.number}`}</div>)
+   return  potentials.map(p => (
+   <div key={p.name}>
+        {`${p.name} ${p.number}`}
+        <button onClick={createDeletorForPerson(p)}>poista</button>
+   </div>))
 }
 
 const PersonForm = ({nameValue, nameChangeFunction, numberValue, numberChangeFunction, submitFunction}) => {
@@ -77,6 +81,14 @@ const App = () => {
 
     const changeFilterString = (event) => setFilterString(event.target.value); 
 
+    const createDeletorForPerson = (deletablePerson) => () => {
+        if(window.confirm(`Poistetaanko ${deletablePerson.name}?`)){
+            const id = deletablePerson.id; 
+            PersonService.deletePerson(id); 
+            setPersons(persons.filter(p => p.id !== id)); 
+        }
+    }
+
     return (
     <div>
         <h2>Puhelinluettelo</h2>
@@ -89,7 +101,8 @@ const App = () => {
          />
 
         <h2>Numerot</h2>
-        <Persons contactInfo={persons} filter={filterString}/>   
+        <Persons contactInfo={persons} 
+        filter={filterString} createDeletorForPerson={createDeletorForPerson}/>   
     </div>)
 }
 
