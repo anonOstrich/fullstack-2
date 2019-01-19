@@ -12,7 +12,7 @@ import api_key from './KeyInfo'
 const Weather = ({capitalName}) => {
     const [weatherInfo, setWeatherInfo] = useState({}); 
 
-    let url = `https://api.apixu.com/v1/current.json?key=${api_key}&q=${capitalName}` 
+    let url = `https://api.apixu.com/v1/current.json?key=${api_key}&q=${encodeURI(capitalName)}` 
 
 
     //if the needed values are still undefined
