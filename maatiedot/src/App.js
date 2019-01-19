@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
+import Weather from './modules/Weather'; 
 
 let allCountries = []; 
 
@@ -16,6 +17,7 @@ const CountryInfo = ({country}) => {
             {languages}
         </ul>
         <div><img src={country.flag} alt={`The flag of ${country.name}`} height="25%" width="25%" /></div>
+        <Weather capitalName={country.capital} />
         </>
     )
 }
