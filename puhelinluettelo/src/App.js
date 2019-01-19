@@ -53,16 +53,22 @@ const App = () => {
     const addNewInformation = (event) => {
         event.preventDefault(); 
 
-        if(persons.map(p => p.name).includes(newName)){
-            alert(`${newName} on jo luettelossa!`);
-        } else {
 
+
+        if(persons.map(p => p.name).includes(newName)){
+            if(window.confirm(`Henkilö ${newName} on jo luettelossa, korvataanko vanha numero uudella?`)){
+                const updatedPerson = {...persons.find(p => p.name === newName), number: newNumber}; 
+                PersonService.updatePerson(updatedPerson)
+                .then(data => setPersons(persons.map(p => p.id !== data.id ? p : data))); 
+            }
+
+        } else {
+            
         const newPerson = {
             name: newName, 
             number: newNumber, 
             id: persons.length + 1
         }
-
         PersonService.addPerson(newPerson)
         .then(p => setPersons(persons.concat(p)));  
         setNewName(''); 
