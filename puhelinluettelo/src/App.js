@@ -39,6 +39,7 @@ const PersonForm = ({nameValue, nameChangeFunction, numberValue, numberChangeFun
 const App = () => {
     
     const [persons, setPersons] = useState([]);
+    const [notificationInfo, setNotificationInfo] = useState({message: null, isError:false}); 
     
 
     useEffect(() => {
@@ -59,7 +60,22 @@ const App = () => {
             if(window.confirm(`Henkilö ${newName} on jo luettelossa, korvataanko vanha numero uudella?`)){
                 const updatedPerson = {...persons.find(p => p.name === newName), number: newNumber}; 
                 PersonService.updatePerson(updatedPerson)
-                .then(data => setPersons(persons.map(p => p.id !== data.id ? p : data))); 
+                .then(data => setPersons(persons.map(p => p.id !== data.id ? p : data)))
+                .then(data => {
+                    setNotificationInfo({
+                        message: `Päivitettiin henkilön ${newName} puhelinnumero`, 
+                        isError: false 
+                    }); 
+                })
+                .catch(data => {
+                    setNotificationInfo({
+                        message: `Henkilö ${newName} on jo poistettu`, 
+                        isError: true 
+                    }); 
+                    setPersons(persons.filter(p => p.name !== newName)); 
+
+                }); 
+
             }
 
         } else {
@@ -71,9 +87,16 @@ const App = () => {
         }
         PersonService.addPerson(newPerson)
         .then(p => setPersons(persons.concat(p)));  
+
+        setNotificationInfo({
+            message: `Lisättiin ${newName}`, 
+            isError: false
+        });
+
         setNewName(''); 
         setNewNumber(''); 
         }
+        setTimeout(() => {setNotificationInfo({message: null, isError: false})}, 4000); 
     }
 
 
@@ -90,14 +113,24 @@ const App = () => {
     const createDeletorForPerson = (deletablePerson) => () => {
         if(window.confirm(`Poistetaanko ${deletablePerson.name}?`)){
             const id = deletablePerson.id; 
-            PersonService.deletePerson(id); 
+            PersonService.deletePerson(id)
+            .then(response => {
+                setNotificationInfo({message: `Henkilö ${deletablePerson.name} poistettu onnistuneesti`, isError: false})
+            }).catch(response => {
+                setNotificationInfo({message: `Henkilö ${deletablePerson.name} on jo poistettu`, isError: true})
+            }); 
             setPersons(persons.filter(p => p.id !== id)); 
         }
+        setTimeout(() => {setNotificationInfo({
+            message: null, 
+            isError: false
+        })}, 4000); 
     }
 
     return (
     <div>
         <h2>Puhelinluettelo</h2>
+        <MessageBox notificationInfo={notificationInfo}/>
         <Filter changeHandler={changeFilterString} />
         <h3>Lisää uusi</h3>
         <PersonForm
@@ -110,6 +143,30 @@ const App = () => {
         <Persons contactInfo={persons} 
         filter={filterString} createDeletorForPerson={createDeletorForPerson}/>   
     </div>)
+}
+
+const MessageBox = ({notificationInfo}) => {
+    const message = notificationInfo.message; 
+    const isError = notificationInfo.isError; 
+    if(message === null){
+        return <></>; 
+    }
+    
+    const messageStyle = {
+        color: isError ? 'red' : 'green', 
+        background: 'lightgrey', 
+        fontSize: 20, 
+        borderStyle: 'solid', 
+        borderRadius: 5, 
+        padding: 10, 
+        marginBottom: 10 
+    }
+
+    return(
+        <div style={messageStyle}>
+            {message}
+        </div>
+    ); 
 }
 
 
