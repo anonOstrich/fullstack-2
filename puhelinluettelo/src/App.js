@@ -54,10 +54,20 @@ const App = () => {
         if(persons.map(p => p.name).includes(newName)){
             alert(`${newName} on jo luettelossa!`);
         } else {
-        setPersons(persons.concat({name: newName || 'no name', number: newNumber || 'xxx'})); 
+
+        const newPerson = {
+            name: newName, 
+            number: newNumber, 
+            id: persons.length + 1
+        }
+         
+        axios.post("http://localhost:3001/persons", newPerson)
+        .then(response => setPersons(persons.concat(response.data))) 
         setNewName(''); 
+        setNewNumber(''); 
         }
     }
+
 
     const changeNumberValue = (event) => {
         setNewNumber(event.target.value); 
