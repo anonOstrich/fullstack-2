@@ -21,11 +21,16 @@ const CountryInfo = ({country}) => {
 }
 
 
-const Countries = ({countries}) => {
+const Countries = ({countries, handleCountryClick}) => {
 
     let countryList = countries.length >  10 ?
                         <>Too many countries, specify another filter</>
-                        : countries.map(country => <div key={country.numericCode}>{country.name}</div>); 
+: countries.map(country => {
+    return (
+    <div key={country.numericCode}>
+        {country.name} <button type="submit" onClick={handleCountryClick(country)}>show</button>
+    </div>)
+    }); 
 
     
     if(countryList.length === 1){
@@ -41,6 +46,11 @@ const Countries = ({countries}) => {
 const App = ({ url }) => {
     const [ filter, setFilter ] = useState(''); 
     const  [ countries, setCountries ] = useState([]); 
+
+    const handleCountryClick = (country) => () => {
+        setCountries([country]); 
+        setFilter(country.name); 
+    }
     
 
     // Kun sivu ladannut, hae tiedot maa-APIsta
@@ -64,7 +74,7 @@ const App = ({ url }) => {
          <div>
             filter countries <input value={filter} onChange={handleFilterUpdate}/>
         </div>
-            <Countries countries={countries} />
+            <Countries countries={countries} handleCountryClick={handleCountryClick} />
         </div>
     )
 }
